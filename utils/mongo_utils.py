@@ -59,3 +59,8 @@ class MongoClient:
 def get_chat_collection() -> Collection:
     db = MongoClient().get_db()
     return db["chats"]
+
+
+def get_user_collection() -> Collection:
+    db = MongoClient().get_db()
+    return db["users"]

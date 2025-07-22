@@ -1,37 +1,44 @@
 import os
+from pymongo.collection import Collection
 
-from .auth_model import SignUp, Login
-from utils import MongoDB
+from .auth_model import SignupRequestBody, LoginRequestBody
+from utils import get_user_collection
 
 
 class AuthController:
+    def __init__(self, user_collection: Collection):
+        self.user_collection = user_collection
 
-    def __init__(self):
-        self.database = os.getenv("DATABASE")
-        self.collection_name = os.getenv("COLLECTION_NAME")
+    async def verify_user(self, request: LoginRequestBody):
+        try:
+            resp = await self.user_collection.find_one(
+                {"user_email_id": request.user_email_id, "password": request.password}
+            )
+            if resp is None:
+                return {
+                    "message": "Email Id or password is incorrect",
+                    "jwt_token": "None",
+                }
+            else:
+                return {"message": "Login successful", "jwt_token": "token"}
+        except Exception:
+            raise
 
-    async def login(self, request: Login):
-        client = MongoDB().connect()
-        db = client[self.database]
-        collection = db[self.collection_name]
-        result = await collection.find(
-            {"useremail": request.useremail, "password": request.password}
-        ).to_list()
-        if not result:
-            return "Wrong username or password"
-        return "Login Approved"
+    async def create_user(self, request: SignupRequestBody):
+        try:
+            resp = await self.user_collection.find_one(
+                {"user_email_id": request.user_email_id}
+            )
+            if resp is not None:
+                return {"message": "Email Id already exists"}
 
-    async def signup(self, request: SignUp):
-        client = MongoDB().connect()
-        db = client[self.database]
-        collection = db[self.collection_name]
-        print(request.useremail)
-        res = await collection.find({"useremail": request.useremail}).to_list()
-        print(res)
-        if not res:
-            print("in here")
-            result = await collection.insert_one(request.model_dump())
-            print(result.inserted_id)
-            return str(result.inserted_id)
-        else:
-            return {"User already exists"}
+            result = await self.user_collection.insert_one(request.model_dump())
+            print(result)
+            if result.inserted_id:
+                print(result.inserted_id)
+                return {"message": "User created Successfully", "jwt_token": "token"}
+            else:
+                return {"message": "Something went wrong", "jwt_token": "None"}
+
+        except Exception:
+            raise

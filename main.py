@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from utils import MongoClient
-from chat import router as chat_router
 
+from utils import MongoClient
+from auth import router as auth_router
+from chat import router as chat_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,3 +32,4 @@ async def root():
 
 
 app.include_router(prefix="/chat", router=chat_router)
+app.include_router(prefix="/auth", router=auth_router)
