@@ -28,7 +28,7 @@ def format_chat_history(
             transformed.append(
                 {
                     "role": "assistant",
-                    "content": entry.get("ai", "No response available")
+                    "content": entry.get("assistant", "No response available")
                     or "No response available",
                 }
             )

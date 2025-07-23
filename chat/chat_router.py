@@ -27,7 +27,7 @@ async def post_llm_response(
     except HTTPException as http_ex:
         raise http_ex
     except Exception as e:
-        print(
-            f"Error occured while generating response from LLM for {body.user_email_id}: {str(e)}"
-        )
-        raise HTTPException(status_code=500, detail="Failed to generate response.")
+            print(
+                f"Error occured while generating response from LLM for {body.user_email_id}: {str(e)}"
+            )
+            raise HTTPException(status_code=500, detail="Failed to generate response.")

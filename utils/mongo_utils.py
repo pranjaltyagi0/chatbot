@@ -34,7 +34,9 @@ class MongoClient:
         retry_attempt = 0
         while retry_attempt < self.mongo_retry_attempts:
             try:
-                MongoClient._client = AsyncMongoClient(self.mongo_uri)
+                MongoClient._client = AsyncMongoClient(
+                    self.mongo_uri, connectTimeoutMS=30 * 60 * 1000
+                )
                 await MongoClient._client.admin.command("ping")
                 return
 
