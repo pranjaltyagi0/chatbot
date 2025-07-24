@@ -3,7 +3,7 @@ name: Chatbot
 on:
   push:
     branches:
-      - master # or your main deployment branch
+      - master
 
 jobs:
   deploy:
@@ -19,6 +19,11 @@ jobs:
           echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.GCP_VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Ensure rsync is installed on VM
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} \
+          "command -v rsync >/dev/null 2>&1 || (sudo apt-get update && sudo apt-get install -y rsync)"
 
       - name: Install rsync and sync files to VM
         run: |
