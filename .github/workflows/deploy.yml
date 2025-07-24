@@ -3,7 +3,7 @@ name: Chatbot
 on:
   push:
     branches:
-      - master
+      - master # or your main deployment branch
 
 jobs:
   deploy:
@@ -13,9 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install rsync
-        run: sudo apt-get update && sudo apt-get install -y rsync
-
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
@@ -23,19 +20,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.GCP_VM_IP }} >> ~/.ssh/known_hosts
 
-      - name: Test SSH connection
+      - name: Install rsync and sync files to VM
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} "echo '✅ Connected from GitHub Actions'"
-
-      - name: Rsync files to VM
-        run: |
+          sudo apt-get update && sudo apt-get install -y rsync
           rsync -avz -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
             --exclude '.git' ./ ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }}:/home/${{ secrets.GCP_VM_USER }}/app
 
       - name: Build and restart Docker services on VM
         run: |
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'EOF'
-            cd ~/app
+            cd /home/${{ secrets.GCP_VM_USER }}/app
             docker-compose down
             docker-compose build --no-cache
             docker-compose up -d
