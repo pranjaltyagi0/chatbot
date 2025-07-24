@@ -1,13 +1,12 @@
-FROM python:3.11-slim
+# genai/Dockerfile
+
+FROM python:3.12-slim
 
 WORKDIR /app
-
-COPY genai/requirements.txt .
+COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY genai/ .
+EXPOSE 7000
 
-EXPOSE 5000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]

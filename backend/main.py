@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
         raise
     finally:
         print("Closing MongoDB Connection")
-        await mongo_client.close_connection()
+        # await mongo_client.close_connection()
 
 
 app = FastAPI(lifespan=lifespan)

@@ -1,17 +1,25 @@
-version: "3.8"
-
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     ports:
       - "3000:3000"
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     ports:
       - "8000:8000"
 
   genai:
-    build: ./genai
+    build:
+      context: ./genai
     ports:
       - "5000:5000"
+    environment:
+      - GROQ_API_KEY
+      - MONGO_URI
+      - MONGO_RETRY_MS
+      - MONGO_RETRY_ATTEMPT
+      - DATABASE_NAME
+      - GROQ_MODEL
