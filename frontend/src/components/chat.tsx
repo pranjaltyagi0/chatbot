@@ -17,7 +17,6 @@ const Chat = () => {
         e.preventDefault();
         if (!input.trim()) return;
 
-        const user_email_id = localStorage.getItem('user');
         const newMessages: Message[] = [...messages, { role: 'user', content: input }];
         setMessages(newMessages);
 
