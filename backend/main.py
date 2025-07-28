@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from utils import MongoClient
 from auth import router as auth_router
 from chat import router as chat_router
+from utils import MongoClient, add_cors_middleware
 
 
 @asynccontextmanager
@@ -27,18 +28,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-origins = [
-    "http://localhost:5173",  # if you're using Vite
-    "http://localhost:8000",  # if using CRA or Next.js dev
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # allow specific origins
-    allow_credentials=True,
-    allow_methods=["*"],  # allow all HTTP methods
-    allow_headers=["*"],  # allow all headers
-)
+add_cors_middleware(app=app)
 
 
 @app.get("/")

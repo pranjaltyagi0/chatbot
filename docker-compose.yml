@@ -3,7 +3,7 @@ services:
     build:
       context: ./frontend
     ports:
-      - "3000:3000"
+      - "80:80"
 
   backend:
     build:
@@ -15,7 +15,7 @@ services:
     build:
       context: ./genai
     ports:
-      - "5000:5000"
+      - "7000:7000"
     environment:
       - GROQ_API_KEY
       - MONGO_URI

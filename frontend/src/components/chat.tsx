@@ -1,62 +1,60 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../store';
-import { sendMessage } from '../store/slices/chatSlice';
-import { logout } from '../store/slices/authSlice';
 import ReactMarkdown from 'react-markdown';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+type Message = {
+    role: 'user' | 'assistant';
+    content: string;
+};
 
 const Chat = () => {
-    const messages = useSelector((state: RootState) => state.chat.messages);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const navigate = useNavigate();
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim()) return;
 
         const user_email_id = localStorage.getItem('user');
-
-        // Show user's message
-        dispatch(sendMessage({ role: 'user', content: input }));
+        const newMessages: Message[] = [...messages, { role: 'user', content: input }];
+        setMessages(newMessages);
 
         try {
-            const response = await fetch('http://localhost:3000/chat/response', {
-                method: 'POST',
+            const url = 'http://localhost:3000/chat/response'
+            const payload = {
+                "user_email_id": localStorage.getItem("user_email_id"),
+                "question": input,
+            }
+            const response = await axios.post(url, payload, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    Accept: "application/json",
+                    "Content-Type": "application/json;charset=UTF-8",
                 },
-                body: JSON.stringify({
-                    user_email_id,
-                    question: input,
-                }),
             });
 
-            const data = await response.json();
-            console.log(data)
-            dispatch(
-                sendMessage({
-                    role: 'assistant',
-                    content: data || 'No response from server.',
-                })
-            );
+            const data = response.data;
+            const assistantMessage: Message = {
+                role: 'assistant',
+                content: typeof data === 'string' ? data : JSON.stringify(data),
+            };
+            setMessages([...newMessages, assistantMessage]);
         } catch (error) {
             console.error('Chat error:', error);
-            dispatch(
-                sendMessage({
-                    role: 'assistant',
-                    content: 'Error contacting server.',
-                })
-            );
+            setMessages([
+                ...newMessages,
+                { role: 'assistant', content: 'Error contacting server.' },
+            ]);
         }
 
         setInput('');
     };
 
+
     const handleLogout = () => {
-        dispatch(logout());
+        localStorage.removeItem('Bearer Token');
+        localStorage.removeItem('user_email_id');
         navigate('/login');
     };
 
@@ -75,6 +73,7 @@ const Chat = () => {
                     Logout
                 </button>
             </div>
+
             <div className="flex-1 overflow-y-auto space-y-2 mb-4">
                 {messages.map((msg, idx) => (
                     <div
@@ -92,6 +91,7 @@ const Chat = () => {
                 ))}
                 <div ref={messagesEndRef} />
             </div>
+
             <form onSubmit={handleSend} className="flex space-x-2">
                 <input
                     type="text"
