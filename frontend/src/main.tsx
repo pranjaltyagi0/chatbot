@@ -6,7 +6,7 @@ import {
 } from "react-router";
 import './index.css'
 import App from './App.tsx'
-import Signup from './components/signup.tsx';
+import Signup from './components/Signup.tsx';
 import Login from './components/Login.tsx';
 import Chat from './components/chat.tsx';
 
