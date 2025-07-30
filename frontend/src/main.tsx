@@ -8,7 +8,7 @@ import './index.css'
 import App from './App.tsx'
 import Signup from './components/Signup.tsx';
 import Login from './components/Login.tsx';
-import Chat from './components/Chat.tsx';
+import Chat from './components/chat.tsx';
 import ProtectedRoutes from './components/ProtectedRoutes.tsx';
 
 const router = createBrowserRouter([
