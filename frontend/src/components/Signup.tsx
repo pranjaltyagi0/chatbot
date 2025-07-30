@@ -81,16 +81,16 @@ function Signup() {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
             });
-
+            console.log(response)
             const data = response.data;
-            if (data.successful) {
+            if (data.successful && data.access_token) {
+                localStorage.setItem("user_email_id", data.user_email_id);
+                localStorage.setItem("Bearer Token", data.access_token);
                 navigate("/chat");
-            } else {
-                setErrorMsg("Signup failed. Try again.");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Signup error", error);
-            setErrorMsg("Something went wrong. Please try again.");
+            setErrorMsg(error.response.data.message)
         } finally {
             setLoading(false);
         }

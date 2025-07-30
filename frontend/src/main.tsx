@@ -9,6 +9,7 @@ import App from './App.tsx'
 import Signup from './components/Signup.tsx';
 import Login from './components/Login.tsx';
 import Chat from './components/chat.tsx';
+import ProtectedRoutes from './components/ProtectedRoutes.tsx';
 
 const router = createBrowserRouter([
   {
@@ -25,7 +26,8 @@ const router = createBrowserRouter([
   },
   {
     path: "chat",
-    element: <Chat />
+    element: <Chat />,
+    loader: ProtectedRoutes
   }
 
 ]);

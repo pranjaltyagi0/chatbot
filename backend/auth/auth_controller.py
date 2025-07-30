@@ -1,7 +1,7 @@
 import os
 import jwt
 from datetime import datetime, timedelta, timezone
-
+from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
 from pymongo.collection import Collection
 
@@ -80,10 +80,13 @@ class AuthController:
                 {"user_email_id": user_email_id}
             )
             if response is not None:
-                return {"message": "Email id already exists"}
+                return JSONResponse(
+                    status_code=404,
+                    content={"message": "Email ID already exists", "successful": False},
+                )
 
             hashed_password = self.create_hashed_password(plaintext_password=password)
-            print(hashed_password)
+
             result = await self.user_collection.insert_one(
                 {
                     "fullname": fullname,
@@ -91,7 +94,6 @@ class AuthController:
                     "password": hashed_password,
                 }
             )
-            print(result)
             if result.inserted_id:
                 access_token_expires = timedelta(
                     minutes=self.access_token_expire_minutes
@@ -100,13 +102,28 @@ class AuthController:
                     data={"sub": request.user_email_id},
                     expires_delta=access_token_expires,
                 )
-                return Token(
-                    successful=True,
-                    user_email_id=user_email_id,
-                    access_token=jwt_token,
-                    token_type="bearer",
+                # return Token(
+                #     successful=True,
+                #     user_email_id=user_email_id,
+                #     access_token=jwt_token,
+                #     token_type="bearer",
+                # )
+                return JSONResponse(
+                    status_code=200,
+                    content={
+                        "user_email_id": user_email_id,
+                        "access_token": jwt_token,
+                        "token_type": "bearer",
+                        "successful": True,
+                    },
                 )
-            return Token(successful=False)
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "mmessage": "Something went wrong. But don't fret it's not your fault",
+                    "successful": False,
+                },
+            )
 
         except Exception:
             raise

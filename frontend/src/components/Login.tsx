@@ -58,7 +58,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
     useEffect(() => {
         const token = localStorage.getItem("Bearer Token");
         if (token) {
@@ -82,7 +82,7 @@ function Login() {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
             });
-
+            console.log(response)
             const data = response.data;
             if (data.successful && data.access_token) {
                 localStorage.setItem("user_email_id", data.user_email_id);
