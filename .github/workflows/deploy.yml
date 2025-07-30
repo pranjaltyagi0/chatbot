@@ -21,6 +21,8 @@ jobs:
 
       - name: Verify & install rsync on Remote Server
         run: |
+          echo ${{secrets.VM_USER}}
+          echo ${{secrets.SERVER_IP}} 
           ssh -i ~./ssh/rsa -o StrictHostKeyChecking=no ${{secrets.VM_USER}}@${{secrets.SERVER_IP}} \
           "command -v rsync >/dev/null 2>&1 || (sudo apt-get update && sudo apt-get install -y rsync)"
 
