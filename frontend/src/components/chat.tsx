@@ -21,7 +21,7 @@ const Chat = () => {
         setMessages(newMessages);
 
         try {
-            const url = 'http://localhost:3000/chat/response'
+            const url = '/api/chat/response'
             const payload = {
                 "user_email_id": localStorage.getItem("user_email_id"),
                 "question": input,

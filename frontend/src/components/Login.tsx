@@ -19,7 +19,7 @@ function Login() {
             setLoading(true);
             setErrorMsg("");
 
-            const url = "http://localhost:3000/auth/login";
+            const url = "/api/auth/login";
             const payload = {
                 "user_email_id": email,
                 "password": password,

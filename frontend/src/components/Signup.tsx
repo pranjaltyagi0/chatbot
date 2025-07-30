@@ -20,7 +20,7 @@ function Signup() {
             setLoading(true);
             setErrorMsg("");
 
-            const url = "http://localhost:3000/auth/signup";
+            const url = "/api/auth/signup";
             const payload = {
                 fullname: fullname,
                 user_email_id: email,
