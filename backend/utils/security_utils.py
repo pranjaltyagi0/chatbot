@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 def add_cors_middleware(app: FastAPI):
-    origins = os.getenv("Origins")
+    origins = os.getenv("ORIGINS")
 
     origin_list = [origin.strip() for origin in origins.split(",") if origin.strip()]
 
