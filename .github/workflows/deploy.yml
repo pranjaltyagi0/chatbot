@@ -40,6 +40,11 @@ jobs:
               docker rm -f $CONTAINERS
             fi
 
+            IMAGES=$(docker images -q)
+            if [ -n "$IMAGES" ]; then
+              docker rmi -f $IMAGES
+            fi
+
             docker compose build --no-cache
             docker compose up -d
           EOF
