@@ -21,11 +21,11 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "signup",
+    path: "/signup",
     element: <Signup />
   },
   {
-    path: "chat",
+    path: "/chat",
     element: <Chat />,
     loader: ProtectedRoutes
   }
