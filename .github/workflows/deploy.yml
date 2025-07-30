@@ -15,28 +15,31 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/rsa
           chmod 600 ~/.ssh/rsa
-          ssh-keyscan -H ${{secrets.SERVER_IP}} > ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Verify & install rsync on Remote Server
         run: |
-          echo ${{secrets.VM_USER}}
-          echo ${{secrets.SERVER_IP}} 
-          ssh -i ~/.ssh/rsa -o StrictHostKeyChecking=no ${{secrets.VM_USER}}@${{secrets.SERVER_IP}} \
+          ssh -i ~/.ssh/rsa ${{ secrets.VM_USER }}@${{ secrets.SERVER_IP }} \
           "command -v rsync >/dev/null 2>&1 || (sudo apt-get update && sudo apt-get install -y rsync)"
 
       - name: Sync files to Server
         run: |
-          rsync -avzh -e 'ssh -i ~/.ssh/rsa -o StrictHostKeyChecking=no' \
-          --exclude=.git ./ ${{secrets.VM_USER}}@#${{secrets.SERVER_IP}}:/home/${{secrets.VM_USER}}/app
+          rsync -avzh -e 'ssh -i ~/.ssh/rsa' \
+            --exclude=.git ./ ${{ secrets.VM_USER }}@${{ secrets.SERVER_IP }}:/home/${{ secrets.VM_USER }}/app
 
-      - name: Build and Restart Docker sevice to VM
+      - name: Build and Restart Docker service on VM
         run: |
-          ssh -i ~/.ssh/rsa -o StrictHostKeyChecking=no ${{secrets.VM_USER}}@${{secrets.SERVER_IP}} << EOF
-          cd /home/${{secrets.VM_USER}}/app
-          docker compose down
-          docker rm $(docker ps -a -q)
+          ssh -i ~/.ssh/rsa ${{ secrets.VM_USER }}@${{ secrets.SERVER_IP }} << EOF
+            cd /home/${{ secrets.VM_USER }}/app
+            docker compose down
+
+            CONTAINERS=$(docker ps -aq)
+            if [ -n "$CONTAINERS" ]; then
+              docker rm -f $CONTAINERS
+            fi
+
             docker compose build --no-cache
             docker compose up -d
           EOF
