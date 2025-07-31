@@ -79,7 +79,7 @@ const Chat = () => {
                         key={idx}
                         className={`p-2 rounded max-w-lg whitespace-pre-wrap ${msg.role === 'user'
                             ? 'bg-blue-700 self-end ml-auto'
-                            : 'bg-gray-700 self-start mr-auto'
+                            : 'bg-gray-600 self-start mr-auto'
                             }`}
                     >
                         <p className="text-xs text-gray-400 mb-1">{msg.role}</p>
